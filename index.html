@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarberStan Kraków — Precyzja w każdym cięciu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ─── RESET + BASE ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F0E8;
+    --ink: #0A0A0A;
+    --ink-50: #0A0A0A80;
+    --accent: #C17F3A;
+    --dark: #0A0A0A;
+    --rule: #0A0A0A20;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* ─── CUSTOM CURSOR ─── */
+  #cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 64px; height: 64px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease, width 0.25s ease, height 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    mix-blend-mode: multiply;
+  }
+  #cursor.is-cta {
+    width: 88px; height: 88px;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  #cursor.is-gallery {
+    width: 88px; height: 88px;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  #cursor-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.3;
+    white-space: nowrap;
+    transition: color 0.25s ease;
+  }
+  #cursor.is-cta #cursor-label,
+  #cursor.is-gallery #cursor-label {
+    color: var(--bg);
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+  }
+
+  .label-rule {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .label-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  a { color: inherit; text-decoration: none; cursor: none; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 48px;
+    background: var(--bg);
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--ink);
+    transition: width 0.3s ease;
+  }
+
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    padding: 10px 24px;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  .nav-cta:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding: 180px 48px 80px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .hero-sec-num {
+    position: absolute;
+    top: 140px; left: 48px;
+  }
+
+  .hero-headline {
+    font-family: var(--serif);
+    font-size: clamp(52px, 7vw, 120px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin-bottom: 48px;
+    color: var(--ink);
+  }
+
+  .hero-headline span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .hero-headline span.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--ink-50);
+    max-width: 380px;
+    margin-bottom: 56px;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .btn-outline-pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    padding: 14px 36px;
+    border-radius: 999px;
+    transition: background 0.25s ease, color 0.25s ease;
+    display: inline-block;
+  }
+
+  .btn-outline-pill:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .btn-underline {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    color: var(--ink-50);
+    transition: color 0.2s ease;
+  }
+
+  .btn-underline:hover { color: var(--ink); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  .hero-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: repeating-linear-gradient(
+      45deg,
+      #111 0px, #111 1px,
+      #161616 1px, #161616 28px
+    );
+    color: #ffffff30;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    gap: 12px;
+  }
+
+  .hero-img-placeholder span { display: block; text-align: center; }
+
+  .hero-scroll-hint {
+    grid-column: 1 / -1;
+    padding: 20px 48px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .scroll-ticker {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .scroll-ticker::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--ink-50);
+  }
+
+  .hero-city {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  section {
+    padding: 120px 48px;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 24px;
+    margin-bottom: 80px;
+  }
+
+  .sec-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    padding-top: 6px;
+  }
+
+  .sec-title {
+    font-family: var(--serif);
+    font-size: clamp(40px, 5.5vw, 88px);
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── ABOUT ─── */
+  #about {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-body {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 2;
+    color: var(--ink);
+  }
+
+  .about-body p + p { margin-top: 28px; }
+
+  .about-pull {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.2;
+    font-style: italic;
+    color: var(--accent);
+    padding-top: 16px;
+    border-top: 2px solid var(--accent);
+    margin-top: 8px;
+  }
+
+  .about-side {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .about-img-tall {
+    width: 100%; 
+    aspect-ratio: 3/4;
+    background: repeating-linear-gradient(
+      -45deg,
+      #e0dbd1 0px, #e0dbd1 1px,
+      #ede8df 1px, #ede8df 24px
+    );
+    display: flex; align-items: flex-end; padding: 20px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+  }
+
+  .about-stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+
+  .about-stat {
+    padding: 24px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 52px;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+    margin-top: 8px;
+  }
+
+  /* ─── SERVICES ─── */
+  #services {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .services-intro {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--ink-50);
+    max-width: 480px;
+    line-height: 1.8;
+    margin-bottom: 80px;
+    margin-left: auto;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+
+  .service-card {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 48px 40px;
+    position: relative;
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
+    background: #fff;
+    z-index: 2;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+  }
+
+  .service-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+
+  .service-name {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .service-desc {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--ink-50);
+    margin-bottom: 40px;
+  }
+
+  .service-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+  }
+
+  .price-main {
+    font-family: var(--serif);
+    font-size: 36px;
+    color: var(--ink);
+  }
+
+  .price-unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-50);
+    text-transform: uppercase;
+  }
+
+  .service-duration {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-50);
+    text-transform: uppercase;
+    margin-left: auto;
+    align-self: center;
+  }
+
+  .services-cta-row {
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .services-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-50);
+    max-width: 320px;
+    line-height: 1.7;
+  }
+
+  /* ─── GALLERY ─── */
+  #gallery {
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 360px 360px;
+    gap: 2px;
+    margin-top: 80px;
+  }
+
+  .gallery-item {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gallery-item:first-child {
+    grid-row: 1 / 3;
+  }
+
+  .gallery-thumb {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ffffff30;
+    gap: 10px;
+    transition: transform 0.5s ease;
+  }
+
+  .gallery-item:hover .gallery-thumb {
+    transform: scale(1.04);
+  }
+
+  .gallery-thumb.a { background: #1a1712; 
+    background: repeating-linear-gradient(135deg, #161410 0px, #161410 2px, #1e1b18 2px, #1e1b18 32px); }
+  .gallery-thumb.b { background: repeating-linear-gradient(135deg, #0f0e0c 0px, #0f0e0c 2px, #1a1916 2px, #1a1916 28px); }
+  .gallery-thumb.c { background: repeating-linear-gradient(45deg, #14130f 0px, #14130f 2px, #1e1c18 2px, #1e1c18 24px); }
+  .gallery-thumb.d { background: repeating-linear-gradient(135deg, #1c1a16 0px, #1c1a16 2px, #221f1b 2px, #221f1b 20px); }
+  .gallery-thumb.e { background: repeating-linear-gradient(45deg, #100f0c 0px, #100f0c 2px, #1a1916 2px, #1a1916 24px); }
+
+  .gallery-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bg);
+  }
+
+  .gallery-item:hover .gallery-overlay {
+    opacity: 1;
+  }
+
+  /* ─── TESTIMONIALS ─── */
+  #testimonials {
+    background: var(--dark);
+    color: var(--bg);
+    border-bottom: none;
+  }
+
+  #testimonials .sec-title { color: var(--bg); }
+  #testimonials .sec-num { color: var(--accent); }
+  #testimonials .label { color: #ffffff40; }
+  #testimonials .label-rule::after { background: #ffffff15; }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid #ffffff15;
+    border-left: 1px solid #ffffff15;
+    margin-top: 80px;
+  }
+
+  .testimonial-card {
+    padding: 56px 48px;
+    border-right: 1px solid #ffffff15;
+    border-bottom: 1px solid #ffffff15;
+    position: relative;
+  }
+
+  .quote-mark {
+    font-family: var(--serif);
+    font-size: 120px;
+    line-height: 0.7;
+    color: var(--accent);
+    opacity: 0.35;
+    margin-bottom: 32px;
+    display: block;
+    font-style: italic;
+  }
+
+  .stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+  }
+
+  .star {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+
+  .testimonial-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: #ffffffcc;
+    margin-bottom: 40px;
+  }
+
+  .testimonial-author {
+    border-top: 1px solid #ffffff15;
+    padding-top: 24px;
+  }
+
+  .author-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bg);
+  }
+
+  .author-detail {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: #ffffff40;
+    margin-top: 4px;
+  }
+
+  .testimonials-cta {
+    margin-top: 80px;
+    text-align: center;
+  }
+
+  .btn-accent-pill {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 18px 52px;
+    border-radius: 999px;
+    display: inline-block;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .btn-accent-pill:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+  }
+
+  /* ─── CONTACT ─── */
+  #contact {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 80px;
+    margin-top: 80px;
+  }
+
+  .contact-left {}
+
+  .contact-headline {
+    font-family: var(--serif);
+    font-size: clamp(36px, 5vw, 72px);
+    line-height: 1.0;
+    margin-bottom: 48px;
+    letter-spacing: -0.01em;
+  }
+
+  .contact-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .contact-cta-main {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--ink);
+    padding: 18px 48px;
+    display: inline-block;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  .contact-cta-main:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .contact-tel {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.5vw, 52px);
+    margin-top: 48px;
+    display: block;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    transition: opacity 0.2s;
+  }
+
+  .contact-tel:hover { opacity: 0.75; }
+
+  .contact-right {
+    padding-top: 8px;
+  }
+
+  .info-block {
+    padding: 32px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .info-block:first-child { padding-top: 0; }
+
+  .info-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .info-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 24px;
+  }
+
+  .day {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--ink-50);
+    letter-spacing: 0.05em;
+  }
+
+  .time {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  .day.today, .time.today {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .day.closed, .time.closed {
+    color: var(--ink-50);
+    opacity: 0.4;
+  }
+
+  /* ─── MAP STRIP ─── */
+  .map-strip {
+    height: 320px;
+    background: repeating-linear-gradient(
+      90deg,
+      #ede8df 0px, #ede8df 1px,
+      transparent 1px, transparent 48px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      #ede8df 0px, #ede8df 1px,
+      transparent 1px, transparent 48px
+    );
+    background-color: #f0ebe2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .map-pin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .map-pin-dot {
+    width: 20px; height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .map-pin-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: ping 2s ease-in-out infinite;
+  }
+
+  @keyframes ping {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+  }
+
+  .map-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    padding: 8px 20px;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 60px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: end;
+    gap: 48px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 32px;
+  }
+
+  .footer-tagline {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+    margin-top: 8px;
+  }
+
+  .footer-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-50);
+    transition: color 0.2s ease;
+  }
+
+  .footer-nav a:hover { color: var(--ink); }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-50);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ─── TICKER ─── */
+  .ticker-bar {
+    background: var(--ink);
+    overflow: hidden;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    animation: ticker 22s linear infinite;
+    width: max-content;
+  }
+
+  .ticker-item {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bg);
+    padding: 0 48px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .ticker-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    body { cursor: auto; }
+    #cursor { display: none; }
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    #hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 140px 24px 60px; border-right: none; }
+    .hero-right { display: none; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item:first-child { grid-row: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── CUSTOM CURSOR ─── -->
+<div id="cursor"><span id="cursor-label"></span></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-logo">BarberStan</a>
+  <ul class="nav-links">
+    <li><a href="#about">O nas</a></li>
+    <li><a href="#services">Usługi</a></li>
+    <li><a href="#gallery">Galeria</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+  <a href="tel:+48504231876" class="nav-cta">+48 504 231 876</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-sec-num">
+      <span class="label">— Kraków, Polska</span>
+    </div>
+
+    <h1 class="hero-headline" id="heroHeadline" aria-label="Precyzja w każdym cięciu.">
+      <!-- JS fills this -->
+    </h1>
+
+    <p class="hero-sub">
+      Nie ma czegoś takiego jak przeciętna wizyta.<br>
+      Każdy klient zasługuje na pełne skupienie,<br>
+      odpowiednie narzędzia i doświadczone ręce.
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="tel:+48504231876" class="btn-outline-pill cta-trigger">Umów wizytę</a>
+      <a href="#services" class="btn-underline">Cennik usług</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <img src="pictures/wnetrze salonu.jpg" alt="Wnętrze salonu BarberStan Kraków"
+         style="width:100%;height:100%;object-fit:cover;display:block;">
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span class="scroll-ticker">Przewiń w dół</span>
+    <span class="hero-city">Karmelicka 8 · 31-128 Kraków</span>
+  </div>
+</section>
+
+<!-- ─── TICKER ─── -->
+<div class="ticker-bar" aria-hidden="true">
+  <div class="ticker-track">
+    <div class="ticker-item">Strzyżenie<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Broda<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Golenie brzytwą<span class="ticker-dot"></span></div>
+    <div class="ticker-item">BarberStan Kraków<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Umów wizytę<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Karmelicka 8<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Strzyżenie<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Broda<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Golenie brzytwą<span class="ticker-dot"></span></div>
+    <div class="ticker-item">BarberStan Kraków<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Umów wizytę<span class="ticker-dot"></span></div>
+    <div class="ticker-item">Karmelicka 8<span class="ticker-dot"></span></div>
+  </div>
+</div>
+
+<!-- ─── ABOUT ─── -->
+<section id="about">
+  <div class="section-header reveal">
+    <span class="sec-num">01</span>
+    <div>
+      <div class="label-rule"><span class="label">Historia</span></div>
+      <h2 class="sec-title">To nie jest<br>przypadkowe miejsce.</h2>
+    </div>
+  </div>
+
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="about-body">
+        <p>
+          BarberStan Kraków powstał z przekonania, że wizyta u barbera to coś więcej
+          niż strzyżenie. To rytuał. Czas dla siebie. Chwila ciszy w głośnym tygodniu.
+          Stanisław od ponad ośmiu lat doskonali swój rzemiosł — nie jako technik, lecz jako
+          rzemieślnik, który rozumie, że każda głowa jest inna i każde cięcie wymaga
+          pełnej obecności.
+        </p>
+        <p>
+          Warsztat na Karmelickiej to miejsce bez pośpiechu. Bez kolejek, bez hałasu,
+          bez przypadkowych klientów. Tutaj wiesz, że masz umówiony termin, krzesło
+          czeka na ciebie, a kawa stoi gotowa. Nic nie jest tu przypadkowe — od doboru
+          narzędzi po to, jak Stanisław słucha, zanim zacznie ciąć.
+        </p>
+        <p>
+          Kraków to nasze miasto. BarberStan to nasza wizytówka. Traktujemy to poważnie.
+        </p>
+      </div>
+      <div class="about-pull" style="margin-top: 48px;">
+        "Brzytwą można zdjąć włos z głowy<br>albo pokazać człowiekowi, kim jest."
+      </div>
+    </div>
+
+    <div class="about-side reveal">
+      <img src="pictures/barber.jpg" alt="Barber Stanisław — BarberStan Kraków"
+           style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;">
+      <div class="about-stat-row">
+        <div class="about-stat">
+          <div class="stat-num">8+</div>
+          <div class="stat-label">lat doświadczenia</div>
+        </div>
+        <div class="about-stat">
+          <div class="stat-num">4k+</div>
+          <div class="stat-label">zadowolonych klientów</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ─── -->
+<section id="services">
+  <div class="section-header reveal">
+    <span class="sec-num">02</span>
+    <div>
+      <div class="label-rule"><span class="label">Cennik</span></div>
+      <h2 class="sec-title">Co robimy<br>i ile to kosztuje.</h2>
+    </div>
+  </div>
+
+  <p class="services-intro reveal">
+    Przejrzysty cennik bez ukrytych opłat.<br>
+    Każda usługa wlicza konsultację i kawę na dobry start.
+  </p>
+
+  <div class="services-grid reveal">
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.01</div>
+      <div class="service-name">Strzyżenie klasyczne</div>
+      <p class="service-desc">
+        Strzyżenie nożyczkami lub maszynką, dostosowane do kształtu twarzy
+        i struktury włosa. Mycie, modelowanie, wykończenie.
+      </p>
+      <div class="service-price">
+        <span class="price-main">60</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">45 min</span>
+      </div>
+    </div>
+
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.02</div>
+      <div class="service-name">Strzyżenie + broda</div>
+      <p class="service-desc">
+        Kompletna usługa: włosy i zarost w jednej wizycie.
+        Formowanie brody, regulacja linii, olejek wykończeniowy.
+      </p>
+      <div class="service-price">
+        <span class="price-main">100</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">75 min</span>
+      </div>
+    </div>
+
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.03</div>
+      <div class="service-name">Golenie brzytwą</div>
+      <p class="service-desc">
+        Klasyczne golenie brzytwą z gorącym ręcznikiem, piankowym kremem
+        i balsamem po goleniu. Rytuał, który przemija.
+      </p>
+      <div class="service-price">
+        <span class="price-main">70</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">40 min</span>
+      </div>
+    </div>
+
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.04</div>
+      <div class="service-name">Modelowanie brody</div>
+      <p class="service-desc">
+        Precyzyjne formowanie i pielęgnacja zarostu. Skracanie,
+        kształtowanie linii, modelowanie wąsów.
+      </p>
+      <div class="service-price">
+        <span class="price-main">45</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">30 min</span>
+      </div>
+    </div>
+
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.05</div>
+      <div class="service-name">Strzyżenie dziecięce</div>
+      <p class="service-desc">
+        Dla chłopców do 12 roku życia. Z cierpliwością, bez pośpiechu —
+        żeby pierwsza wizyta była dobra.
+      </p>
+      <div class="service-price">
+        <span class="price-main">40</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">35 min</span>
+      </div>
+    </div>
+
+    <div class="service-card cta-trigger">
+      <div class="service-num">S.06</div>
+      <div class="service-name">Pakiet premium</div>
+      <p class="service-desc">
+        Strzyżenie + golenie brzytwą + pielęgnacja brody + maska na twarz.
+        Dla tych, którzy mają czas, żeby poczuć różnicę.
+      </p>
+      <div class="service-price">
+        <span class="price-main">150</span>
+        <span class="price-unit">zł</span>
+        <span class="service-duration">100 min</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="services-cta-row reveal">
+    <p class="services-note">
+      Ceny mogą się różnić w zależności od długości i gęstości włosów.
+      Zawsze informujemy przed przystąpieniem do usługi.
+    </p>
+    <a href="tel:+48504231876" class="btn-outline-pill cta-trigger">Zarezerwuj termin</a>
+  </div>
+</section>
+
+<!-- ─── GALLERY ─── -->
+<section id="gallery">
+  <div class="section-header reveal">
+    <span class="sec-num">03</span>
+    <div>
+      <div class="label-rule"><span class="label">Nasze prace</span></div>
+      <h2 class="sec-title">Rezultaty mówią<br>same za siebie.</h2>
+    </div>
+  </div>
+
+  <div class="gallery-grid reveal">
+    <div class="gallery-item gallery-trigger">
+      <img src="pictures/fryz1.jpg" alt="Strzyżenie klasyczne — BarberStan Kraków"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="gallery-overlay">Strzyżenie klasyczne — Kraków</div>
+    </div>
+    <div class="gallery-item gallery-trigger">
+      <img src="pictures/fryz4.jpg" alt="Broda + Wąsy — BarberStan Kraków"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="gallery-overlay">Broda + Wąsy</div>
+    </div>
+    <div class="gallery-item gallery-trigger">
+      <img src="pictures/fryz2.jpg" alt="Fade boczny — BarberStan Kraków"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="gallery-overlay">Fade boczny</div>
+    </div>
+    <div class="gallery-item gallery-trigger">
+      <img src="pictures/fryz5.jpg" alt="Golenie brzytwą — BarberStan Kraków"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="gallery-overlay">Golenie brzytwą</div>
+    </div>
+    <div class="gallery-item gallery-trigger">
+      <img src="pictures/fryz3.jpg" alt="Pakiet premium — BarberStan Kraków"
+           style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="gallery-overlay">Pakiet premium</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section id="testimonials">
+  <div class="section-header reveal">
+    <span class="sec-num">04</span>
+    <div>
+      <div class="label-rule"><span class="label">Opinie klientów</span></div>
+      <h2 class="sec-title">Słowa, które<br>wracają z klientami.</h2>
+    </div>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <span class="quote-mark">"</span>
+      <div class="stars">
+        <div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div>
+      </div>
+      <p class="testimonial-text">
+        Przyszedłem bez konkretnego pomysłu. Stanisław zapytał kilka pytań,
+        obejrzał, pomyślał — i zrobił dokładnie to, czego potrzebowałem,
+        tylko że lepiej niż bym umiał to opisać. Chodzę tu od trzech lat.
+      </p>
+      <div class="testimonial-author">
+        <div class="author-name">Bartosz M.</div>
+        <div class="author-detail">Stały klient — Kraków</div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal">
+      <span class="quote-mark">"</span>
+      <div class="stars">
+        <div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div>
+      </div>
+      <p class="testimonial-text">
+        Golenie brzytwą to był mój pierwszy raz. Bałem się trochę,
+        a wyszedłem zrelaksowany bardziej niż po saunie. Połączenie
+        gorącego ręcznika, dobrego kremu i spokojnej ręki — nie ma
+        drugiego takiego miejsca w Krakowie.
+      </p>
+      <div class="testimonial-author">
+        <div class="author-name">Damian R.</div>
+        <div class="author-detail">Klient od 2023 r.</div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal">
+      <span class="quote-mark">"</span>
+      <div class="stars">
+        <div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div>
+      </div>
+      <p class="testimonial-text">
+        Przyprowadziłem syna na pierwszą wizytę — miał osiem lat i strasznie się
+        bał. Stanisław traktował go jak dorosłego, rozmawiał, nie spieszył się.
+        Syn teraz sam prosi, żeby iść do Stanisława. Powiedział więcej niż jakiekolwiek
+        reklamy.
+      </p>
+      <div class="testimonial-author">
+        <div class="author-name">Krzysztof W.</div>
+        <div class="author-detail">Tata i klient — Kraków</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="testimonials-cta reveal">
+    <a href="tel:+48504231876" class="btn-accent-pill cta-trigger">Umów się teraz</a>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="section-header reveal">
+    <span class="sec-num">05</span>
+    <div>
+      <div class="label-rule"><span class="label">Kontakt</span></div>
+      <h2 class="sec-title">Jesteśmy<br>tu dla ciebie.</h2>
+    </div>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-left reveal">
+      <h3 class="contact-headline">
+        Zadzwoń,<br>umów termin,<br><em>przyjedź.</em>
+      </h3>
+      <a href="tel:+48504231876" class="contact-cta-main cta-trigger">
+        Zadzwoń i umów wizytę
+      </a>
+      <a href="tel:+48504231876" class="contact-tel">+48 504 231 876</a>
+    </div>
+
+    <div class="contact-right reveal">
+      <div class="info-block">
+        <div class="info-label">Adres</div>
+        <div class="info-value">Karmelicka 8<br>31-128 Kraków<br>Polska</div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Godziny otwarcia</div>
+        <div class="info-value">
+          <div class="hours-grid" id="hoursGrid">
+            <span class="day">Poniedziałek</span><span class="time">9:00 – 17:00</span>
+            <span class="day">Wtorek</span><span class="time">9:00 – 17:00</span>
+            <span class="day">Środa</span><span class="time">9:00 – 17:00</span>
+            <span class="day">Czwartek</span><span class="time">9:00 – 17:00</span>
+            <span class="day">Piątek</span><span class="time">9:00 – 18:00</span>
+            <span class="day closed">Sobota</span><span class="time closed">Zamknięte</span>
+            <span class="day closed">Niedziela</span><span class="time closed">Zamknięte</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Telefon</div>
+        <div class="info-value">
+          <a href="tel:+48504231876" style="color: var(--accent);">+48 504 231 876</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MAP STRIP ─── -->
+<div class="map-strip" style="padding:0;display:block;">
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2442.8793878740494!2d20.99151631184896!3d52.24557437187362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecc7c1d25b50d%3A0x974a78710c56f742!2sKarmelicka%208%2C%2000-163%20Warszawa!5e0!3m2!1spl!2spl!4v1778011290604!5m2!1spl!2spl"
+    width="100%" height="320" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div>
+    <div class="footer-brand">BarberStan</div>
+    <div class="footer-tagline">Precyzja w każdym cięciu · Kraków</div>
+  </div>
+
+  <ul class="footer-nav">
+    <li><a href="#about">O nas</a></li>
+    <li><a href="#services">Usługi i cennik</a></li>
+    <li><a href="#gallery">Galeria</a></li>
+    <li><a href="#testimonials">Opinie</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+
+  <div class="footer-copy">
+    BarberStan Kraków<br>
+    Karmelicka 8, 31-128 Kraków<br>
+    +48 504 231 876<br><br>
+    © 2026 BarberStan. Wszelkie prawa zastrzeżone.
+  </div>
+</footer>
+
+<!-- ─── JAVASCRIPT ─── -->
+<script>
+  /* ── CUSTOM CURSOR ── */
+  const cursor = document.getElementById('cursor');
+  const cursorLabel = document.getElementById('cursor-label');
+  let mouseX = 0, mouseY = 0;
+  let curX = 0, curY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animateCursor() {
+    curX += (mouseX - curX) * 0.14;
+    curY += (mouseY - curY) * 0.14;
+    cursor.style.left = curX + 'px';
+    cursor.style.top = curY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('.cta-trigger').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('is-cta');
+      cursorLabel.textContent = 'UMÓW →';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('is-cta');
+      cursorLabel.textContent = '';
+    });
+  });
+
+  document.querySelectorAll('.gallery-trigger').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('is-gallery');
+      cursorLabel.textContent = 'ZOBACZ →';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('is-gallery');
+      cursorLabel.textContent = '';
+    });
+  });
+
+  /* ── HERO LETTER ANIMATION ── */
+  const heroHeadline = document.getElementById('heroHeadline');
+  const headlineText = 'PRECYZJA\nW KAŻDYM\nCIĘCIU.';
+  const lines = headlineText.split('\n');
+
+  lines.forEach((line, li) => {
+    const lineEl = document.createElement('div');
+    lineEl.style.display = 'block';
+
+    line.split('').forEach((char, ci) => {
+      const span = document.createElement('span');
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.transitionDelay = (li * 180 + ci * 42) + 'ms';
+      lineEl.appendChild(span);
+    });
+
+    heroHeadline.appendChild(lineEl);
+  });
+
+  // trigger after slight delay
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      heroHeadline.querySelectorAll('span').forEach(s => s.classList.add('revealed'));
+    }, 120);
+  });
+
+  /* ── SCROLL REVEAL ── */
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  /* ── HIGHLIGHT TODAY'S HOURS ── */
+  const todayIdx = new Date().getDay(); // 0=Sun, 1=Mon...
+  // grid order: Mon(1), Tue(2), Wed(3), Thu(4), Fri(5), Sat(6), Sun(0)
+  const dayMap = [6, 0, 1, 2, 3, 4, 5]; // JS day → grid row index
+  const gridRowIdx = dayMap[todayIdx];
+  const hoursGrid = document.getElementById('hoursGrid');
+  const children = hoursGrid.children;
+  const row = gridRowIdx * 2;
+  if (children[row]) {
+    children[row].classList.add('today');
+    children[row + 1].classList.add('today');
+  }
+
+
+</script>
+
+</body>
+</html>
